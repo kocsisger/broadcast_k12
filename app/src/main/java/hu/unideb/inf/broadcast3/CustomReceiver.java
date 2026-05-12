@@ -12,7 +12,8 @@ public class CustomReceiver extends BroadcastReceiver {
 
         switch (intent.getAction()){
             case Intent.ACTION_POWER_CONNECTED:    toastMessage="Power connected.";    break;
-            case Intent.ACTION_POWER_DISCONNECTED: toastMessage="Power disconnected.";
+            case Intent.ACTION_POWER_DISCONNECTED: toastMessage="Power disconnected."; break;
+            case MainActivity.ACTION_CUSTOM_BROADCAST: toastMessage="Custom action received.";
         }
 
         Toast.makeText(context, toastMessage, Toast.LENGTH_SHORT).show();

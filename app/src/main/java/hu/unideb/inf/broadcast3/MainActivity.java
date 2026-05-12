@@ -1,9 +1,12 @@
 package hu.unideb.inf.broadcast3;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import androidx.activity.EdgeToEdge;
@@ -35,10 +38,46 @@ public class MainActivity extends AppCompatActivity {
         filter.addAction(ACTION_CUSTOM_BROADCAST);
 
         this.registerReceiver(customReceiver, filter, RECEIVER_EXPORTED);
+
+        new Thread(
+                () -> {
+                    for (int i = 0; i < 15; i++) {
+                        try {
+                            Thread.sleep(1000);
+                            Log.d("PendingIntent" , "Count " + (i+1));
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                }
+        ).start();
+
+        Intent intent = new Intent(this, MyReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(this,
+                0,
+                intent,
+                PendingIntent.FLAG_IMMUTABLE);
+
+        AlarmManager alarmManager = getSystemService(AlarmManager.class);
+
+        long triggerTime = System.currentTimeMillis() + 10*1000;
+
+        alarmManager.set(
+                AlarmManager.RTC_WAKEUP,
+                triggerTime,
+                pendingIntent
+        );
+
     }
 
     public void sendBroadcast(View view) {
         Intent intent = new Intent(ACTION_CUSTOM_BROADCAST);
         this.sendBroadcast(intent);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        this.unregisterReceiver(customReceiver);
     }
 }
